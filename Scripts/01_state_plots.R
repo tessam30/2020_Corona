@@ -48,15 +48,8 @@ va <- df_geo %>%
 
 df %>% count(county, state) %>% arrange(county) %>% prinf
 
-df_arl <- va %>% filter(county == "Arlington") %>% 
-  mutate(label = if_else(date == max(date), cases, NA_real_))
 
-va %>% ggplot() +
-  geom_sf(aes(fill = max_cases), colour = "white", size = 0.25) +
-  scale_fill_viridis_c(option = "D", na.value = "#d3d3d3") + 
-  theme_void() +
-  si_style_nolines()
-
+# PLOT --------------------------------------------------------------------
 
 
 ggplot(va, aes(x = date, y = cases, group = paste(county), 
@@ -69,9 +62,22 @@ ggplot(va, aes(x = date, y = cases, group = paste(county),
 va %>% 
   filter(state == "Virginia", max_cases > 50) %>% 
   mutate(county_sort = fct_reorder(county, cases, .fun = max)) %>% 
-ggplot(., aes(x = date, y = county_sort, fill = cases)) + 
+  ggplot(., aes(x = date, y = county_sort, fill = cases)) + 
   geom_tile(colour = "white", size = 0.25) + scale_fill_viridis_c() +
   si_style_nolines()
+
+df_arl <- va %>% filter(county == "Arlington") %>% 
+  mutate(label = if_else(date == max(date), cases, NA_real_))
+
+va %>% ggplot() +
+  geom_sf(aes(fill = max_cases), colour = "white", size = 0.25) +
+  scale_fill_viridis_c(option = "D", na.value = "#d3d3d3") + 
+  theme_void() +
+  si_style_nolines()
+
+
+
+
   
 
   
