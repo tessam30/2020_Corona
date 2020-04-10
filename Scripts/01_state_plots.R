@@ -49,6 +49,8 @@ va <- df_geo %>%
 
 df %>% count(county, state) %>% arrange(county) %>% prinf
 
+df_arl <- va %>% filter(county == "Arlington") %>% 
+  mutate(label = if_else(date == max(date), cases, NA_real_))
 
 # PLOT --------------------------------------------------------------------
 
@@ -67,8 +69,7 @@ va %>%
   geom_tile(colour = "white", size = 0.25) + scale_fill_viridis_c() +
   si_style_nolines()
 
-df_arl <- va %>% filter(county == "Arlington") %>% 
-  mutate(label = if_else(date == max(date), cases, NA_real_))
+
 
 va %>% ggplot() +
   geom_sf(aes(fill = max_cases), colour = "white", size = 0.25) +
