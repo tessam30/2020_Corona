@@ -27,8 +27,6 @@ library(glitr)
   }
 
 
-
-
 # LOAD AND MUNG -----------------------------------------------------------
 
 link <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
