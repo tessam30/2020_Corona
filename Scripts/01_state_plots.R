@@ -42,7 +42,7 @@ df <- read_csv(link) %>% filter(state %in% states) %>%
 
 va <- df_geo %>% 
   rename(fips = STCOFIPS) %>% 
-  left_join(., df %>% filter(state == "Virginia"), by = c("fips")) 
+  right_join(., df %>% filter(state %in% c("Virginia", "District of Columbia")), by = c("fips")) 
 
 
 df %>% count(county, state) %>% arrange(county) %>% prinf
