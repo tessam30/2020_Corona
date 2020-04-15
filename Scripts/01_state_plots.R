@@ -47,8 +47,9 @@ va <- df_geo %>%
 
 df %>% count(county, state) %>% arrange(county) %>% prinf
 
-df_arl <- va %>% filter(county == "Arlington") %>% 
-  mutate(label = if_else(date == max(date), cases, NA_real_))
+df_arl <- va %>% filter(cases > 400) %>% 
+  mutate(label = if_else(date == max(date), paste(cases, county), NA_character_))
+
 
 # PLOT --------------------------------------------------------------------
 
@@ -61,9 +62,9 @@ ggplot(va, aes(x = date, y = cases, group = paste(county),
 
 
 va %>% 
-  filter(state == "Virginia", max_cases > 50) %>% 
+  filter(max_cases > 50) %>% 
   mutate(county_sort = fct_reorder(county, cases, .fun = max)) %>% 
-  ggplot(., aes(x = date, y = county_sort, fill = cases)) + 
+  ggplot(., aes(x = date, y = county_sort, fill = log(cases))) + 
   geom_tile(colour = "white", size = 0.25) + scale_fill_viridis_c() +
   si_style_nolines()
 
