@@ -53,12 +53,15 @@ df_arl <- va %>% filter(cases > 400) %>%
 
 # PLOT --------------------------------------------------------------------
 
+date_min <- df %>% summarise(min = min(date, na.rm = TRUE)) %>% pull()
+date_max <- df %>% summarise(max = max(date, na.rm = TRUE) + 10) %>% pull()
 
 ggplot(va, aes(x = date, y = cases, group = paste(county), 
                colour = state)) + geom_line(colour = "#D3D3D3") +
   geom_line(data = df_arl, aes(x = date, y = cases), colour = "#505050") +
-  ggrepel::geom_label_repel(data = df_arl, aes(label = label)) +
-  scale_y_log10() + si_style()
+  ggrepel::geom_label_repel(data = df_arl, aes(label = label), nudge_x = 1, force = 10) +
+  scale_y_log10() + si_style() +
+  expand_limits(x = as.Date(c(date_min, date_max)))
 
 
 va %>% 
