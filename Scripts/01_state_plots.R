@@ -37,7 +37,10 @@ df <- read_csv(link) %>% filter(state %in% states) %>%
   arrange(county, date) %>% 
   group_by(state, county) %>% 
   mutate(max_cases = max(cases)) %>% 
-  ungroup()
+  ungroup() %>% 
+  group_by(county, state) %>% 
+  mutate(daily_cases = cases - lag(cases, order_by = date)) %>% 
+  ungroup
 
 
 va <- df_geo %>% 
@@ -47,7 +50,7 @@ va <- df_geo %>%
 
 df %>% count(county, state) %>% arrange(county) %>% prinf
 
-df_arl <- va %>% filter(cases > 400) %>% 
+df_arl <- va %>% filter(cases > 1000) %>% 
   mutate(label = if_else(date == max(date), paste(cases, county), NA_character_))
 
 
@@ -79,6 +82,14 @@ va %>% ggplot() +
   theme_void() +
   si_style_nolines()
 
+
+# daily cases
+va %>% filter(county %in% c("Arlington", "Fairfax", "District of Columbia", "Alexandria city")) %>% 
+  ggplot(aes(x = date, y = daily_cases)) +
+  geom_area(aes(fill = county)) +
+  geom_line(colour = "white", size = 1) +
+    facet_wrap(~county, scale = "free_y") +
+  si_style_ygrid()
 
 
 
