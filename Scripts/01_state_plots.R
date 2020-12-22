@@ -11,6 +11,7 @@ library(scales)
 library(sf)
 library(extrafont)
 library(glitr)
+library(here)
 
 
 # GLOBALS -----------------------------------------------------------------
@@ -18,6 +19,8 @@ library(glitr)
   data_in <- "Data"
   data_out <- "Dataout"
   gis <- "GIS"
+  image <- "Images"
+  
   
   
   states <- c("Virginia", "District of Columbia", "Maryland")
@@ -50,7 +53,7 @@ va <- df_geo %>%
 
 df %>% count(county, state) %>% arrange(county) %>% prinf
 
-df_arl <- va %>% filter(cases > 1000) %>% 
+df_arl <- va %>% filter(cases > 10000) %>% 
   mutate(label = if_else(date == max(date), paste(cases, county), NA_character_))
 
 
@@ -71,26 +74,42 @@ va %>%
   filter(max_cases > 50) %>% 
   mutate(county_sort = fct_reorder(county, cases, .fun = max)) %>% 
   ggplot(., aes(x = date, y = county_sort, fill = log(cases))) + 
-  geom_tile(colour = "white", size = 0.25) + scale_fill_viridis_c() +
+  geom_tile(colour = "white", size = 0.25) + 
+  scale_fill_viridis_c() +
   si_style_nolines()
 
 
 
-va %>% ggplot() +
-  geom_sf(aes(fill = max_cases), colour = "white", size = 0.25) +
-  scale_fill_viridis_c(option = "D", na.value = "#d3d3d3") + 
-  theme_void() +
-  si_style_nolines()
+# va %>% ggplot() +
+#   geom_sf(aes(fill = max_cases), colour = "white", size = 0.25) +
+#   scale_fill_viridis_c(option = "D", na.value = "#d3d3d3") + 
+#   theme_void() +
+#   si_style_nolines()
 
+facet_newline <- function(string) {
+  paste(string, "\n")
+} 
+  
 
 # daily cases
-va %>% filter(county %in% c("Arlington", "Fairfax", "District of Columbia", "Alexandria city")) %>% 
+va %>% filter(county %in% c("Arlington", "Fairfax", 
+  "District of Columbia", "Alexandria city")) %>% 
   ggplot(aes(x = date, y = daily_cases)) +
-  geom_area(aes(fill = county)) +
-  geom_line(colour = "white", size = 1) +
-    facet_wrap(~county, scale = "free_y") +
-  si_style_ygrid()
+  geom_area(aes(fill = county), alpha = 0.85) +
+  geom_line(colour = "white", size = 0.25) +
+    facet_wrap(~county, scale = "free_y",
+        labeller = labeller(county = facet_newline)) +
+  geom_smooth(color = old_rose, alpha = 0.5, se = FALSE) +
+  si_style_ygrid() +
+  scale_fill_si(palette = "siei",)+
+  theme(legend.position = "none") +
+  labs(title = "COVID-19 CASES by Day", y = NULL)
 
+
+ggsave(here(image, paste0("COVID_DC_Region_Cases_", Sys.Date(), ".pdf")), last_plot(), 
+       device = "pdf",
+       height = 8.5,
+       width = 11)
 
 
   
